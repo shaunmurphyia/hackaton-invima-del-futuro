@@ -12,7 +12,7 @@ import { MoleculeRepository } from '../../database/repositories/molecule.reposit
 import { ResearchRepository } from '../../database/repositories/research.repository';
 import { TriggerResearchDto } from './dto/trigger-research.dto';
 import { ResearchEntity } from '../../database/entities/research.entity';
-import { MoleculeStatus } from '../../database/entities/molecule.entity';
+import { MoleculeEntity, MoleculeStatus } from '../../database/entities/molecule.entity';
 
 @Injectable()
 export class ResearchService {
@@ -26,20 +26,31 @@ export class ResearchService {
   ) {}
 
   async investigateMolecule(
-    moleculeId: string,
+    moleculeIdOrName: string,
     dto?: TriggerResearchDto,
   ): Promise<ResearchEntity> {
-    const molecule = await this.moleculeRepository.findById(moleculeId);
+    let molecule: MoleculeEntity | null = null;
+
+    // 1. Intentar buscar por UUID
+    molecule = await this.moleculeRepository.findById(moleculeIdOrName);
+
+    // 2. Si no se encuentra por UUID, permitir búsqueda o creación rápida por Nombre de Molécula
     if (!molecule) {
-      throw new NotFoundException(`Molécula con ID ${moleculeId} no encontrada.`);
+      // Si parece un nombre de molécula (no solo un UUID fallido) o si se desea investigar directamente por nombre
+      this.logger.log(`Molécula no encontrada por ID directo. Creando registro dinámico para "${moleculeIdOrName}"...`);
+      molecule = await this.moleculeRepository.create({
+        name: moleculeIdOrName,
+        confidence_score: 1.0,
+        status: MoleculeStatus.DETECTED,
+      });
     }
 
     this.logger.log(
-      `Iniciando agente de investigación para molécula "${molecule.name}" (ID: ${moleculeId})...`,
+      `Iniciando agente de investigación para molécula "${molecule.name}" (ID: ${molecule.id})...`,
     );
 
     // Actualizar estado intermedio
-    await this.moleculeRepository.update(moleculeId, {
+    await this.moleculeRepository.update(molecule.id, {
       status: MoleculeStatus.RESEARCHING,
     });
 
@@ -60,11 +71,11 @@ export class ResearchService {
       moleculeUpdates.molecular_weight = result.molecular_weight;
     }
 
-    await this.moleculeRepository.update(moleculeId, moleculeUpdates);
+    await this.moleculeRepository.update(molecule.id, moleculeUpdates);
 
     // Persistir hallazgos científicos en la tabla research
     const savedResearch = await this.researchRepository.create({
-      molecule_id: moleculeId,
+      molecule_id: molecule.id,
       provider: dto?.preferredProvider || result.provider,
       summary: result.summary,
       indications: result.indications,
