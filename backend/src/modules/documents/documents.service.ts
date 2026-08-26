@@ -4,6 +4,7 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import {
   IPdfExtractor,
@@ -12,6 +13,10 @@ import {
 import { DocumentRepository } from '../../database/repositories/document.repository';
 import { DocumentEntity, DocumentStatus } from '../../database/entities/document.entity';
 import { UploadDocumentResponseDto } from './dto/upload-document-response.dto';
+import { MoleculesService } from '../molecules/molecules.service';
+import { ResearchService } from '../research/research.service';
+import { ReportsService } from '../reports/reports.service';
+import { ConsolidatedDossierReportDto } from '../reports/dto/consolidated-report-response.dto';
 
 @Injectable()
 export class DocumentsService {
@@ -21,6 +26,12 @@ export class DocumentsService {
     @Inject(PDF_EXTRACTOR_TOKEN)
     private readonly pdfExtractor: IPdfExtractor,
     private readonly documentRepository: DocumentRepository,
+    @Inject(forwardRef(() => MoleculesService))
+    private readonly moleculesService: MoleculesService,
+    @Inject(forwardRef(() => ResearchService))
+    private readonly researchService: ResearchService,
+    @Inject(forwardRef(() => ReportsService))
+    private readonly reportsService: ReportsService,
   ) {}
 
   async processAndUploadPdf(file: Express.Multer.File): Promise<UploadDocumentResponseDto> {
@@ -66,6 +77,33 @@ export class DocumentsService {
       previewText,
       created_at: savedDoc.created_at,
     };
+  }
+
+  /**
+   * Pipeline End-to-End en 1 sola llamada (One-Click Analysis para Frontend)
+   */
+  async processFullPipeline(file: Express.Multer.File): Promise<ConsolidatedDossierReportDto> {
+    this.logger.log(`⚡ Ejecutando Pipeline completo 1-Click para expediente: ${file?.originalname}`);
+
+    // 1. Subir y extraer texto de PDF
+    const uploadResult = await this.processAndUploadPdf(file);
+
+    // 2. Detectar y extraer moléculas
+    const extractionResult = await this.moleculesService.extractAndSave({
+      documentId: uploadResult.id,
+    });
+
+    // 3. Investigar automáticamente cada molécula identificada
+    for (const mol of extractionResult.molecules) {
+      try {
+        await this.researchService.investigateMolecule(mol.id);
+      } catch (err) {
+        this.logger.warn(`Error en investigación de molécula ${mol.name}: ${err.message}`);
+      }
+    }
+
+    // 4. Generar reporte consolidado con auditoría INVIMA
+    return this.reportsService.generateDossierReport(uploadResult.id);
   }
 
   async getDocumentById(id: string): Promise<DocumentEntity> {

@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { DocumentEntity } from '../../../database/entities/document.entity';
 import { MoleculeEntity } from '../../../database/entities/molecule.entity';
 import { ResearchEntity } from '../../../database/entities/research.entity';
+import { InvimaComplianceResultDto } from './invima-compliance.dto';
 
 export class EnrichedMoleculeReportDto extends MoleculeEntity {
   @ApiProperty({
@@ -26,6 +27,12 @@ export class ConsolidatedDossierReportDto {
     description: 'Listado completo de moléculas con sus fichas de investigación clínica y regulatoria',
   })
   molecules: EnrichedMoleculeReportDto[];
+
+  @ApiProperty({
+    type: InvimaComplianceResultDto,
+    description: 'Auditoría y dictamen de conformidad regulatoria INVIMA (Decreto 677/1782)',
+  })
+  invimaCompliance: InvimaComplianceResultDto;
 
   @ApiProperty({
     example:
