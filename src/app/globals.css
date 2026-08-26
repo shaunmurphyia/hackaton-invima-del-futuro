@@ -1,26 +1,458 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Gladwell Brand Colors - DARK MODE (default) */
+  --background: oklch(0.10 0.02 270);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.15 0.02 270);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.15 0.02 270);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.60 0.20 280);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.18 0.02 270);
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.22 0.02 270);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: oklch(0.70 0.15 195);
+  --accent-foreground: oklch(0.10 0.02 270);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.30 0.03 280);
+  --input: oklch(0.18 0.02 270);
+  --ring: oklch(0.70 0.15 195);
+  --chart-1: oklch(0.60 0.20 280);
+  --chart-2: oklch(0.70 0.15 195);
+  --chart-3: oklch(0.55 0.18 260);
+  --chart-4: oklch(0.65 0.12 210);
+  --chart-5: oklch(0.75 0.10 180);
+  --radius: 1rem;
+  --sidebar: oklch(0.12 0.02 270);
+  --sidebar-foreground: oklch(0.98 0 0);
+  --sidebar-primary: oklch(0.60 0.20 280);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.18 0.02 270);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(0.30 0.03 280);
+  --sidebar-ring: oklch(0.70 0.15 195);
+
+  /* Fixed navbar scroll offset (h-20 = 5rem) */
+  --scroll-offset: 5rem;
+
+  /* Gladwell Gradient Colors */
+  --gladwell-purple: #7C3AED;
+  --gladwell-cyan: #06B6D4;
+  --gladwell-purple-light: #A78BFA;
+  --gladwell-cyan-light: #22D3EE;
+
+  /* Liquid Glass Variables - Dark */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --glass-blur: 20px;
+
+  /* Header fijo del portal: opaco de verdad, no decorativo como .glass */
+  --header-bg: rgba(8, 8, 12, 0.92);
+}
+
+/* LIGHT MODE */
+.light {
+  --background: oklch(0.97 0.005 270);
+  --foreground: oklch(0.12 0.02 270);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.12 0.02 270);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.12 0.02 270);
+  --primary: oklch(0.55 0.22 280);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.92 0.01 270);
+  --secondary-foreground: oklch(0.12 0.02 270);
+  --muted: oklch(0.93 0.01 270);
+  --muted-foreground: oklch(0.45 0.02 270);
+  --accent: oklch(0.60 0.15 195);
+  --accent-foreground: oklch(0.98 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.85 0.02 270);
+  --input: oklch(0.90 0.01 270);
+  --ring: oklch(0.55 0.22 280);
+  --chart-1: oklch(0.55 0.22 280);
+  --chart-2: oklch(0.60 0.15 195);
+  --chart-3: oklch(0.50 0.18 260);
+  --chart-4: oklch(0.55 0.12 210);
+  --chart-5: oklch(0.65 0.10 180);
+  --sidebar: oklch(0.95 0.005 270);
+  --sidebar-foreground: oklch(0.12 0.02 270);
+  --sidebar-primary: oklch(0.55 0.22 280);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.92 0.01 270);
+  --sidebar-accent-foreground: oklch(0.12 0.02 270);
+  --sidebar-border: oklch(0.85 0.02 270);
+  --sidebar-ring: oklch(0.55 0.22 280);
+
+  /* Liquid Glass Variables - Light */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(124, 58, 237, 0.15);
+  --glass-shadow: 0 8px 32px rgba(124, 58, 237, 0.08);
+  --glass-blur: 20px;
+
+  /* Header fijo del portal: opaco de verdad, no decorativo como .glass */
+  --header-bg: rgba(255, 255, 255, 0.92);
+}
+
+.dark {
+  --background: oklch(0.10 0.02 270);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.15 0.02 270);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.15 0.02 270);
+  --popover-foreground: oklch(0.98 0 0);
+  --primary: oklch(0.60 0.20 280);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.18 0.02 270);
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.22 0.02 270);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: oklch(0.70 0.15 195);
+  --accent-foreground: oklch(0.10 0.02 270);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.30 0.03 280);
+  --input: oklch(0.18 0.02 270);
+  --ring: oklch(0.70 0.15 195);
+  --chart-1: oklch(0.60 0.20 280);
+  --chart-2: oklch(0.70 0.15 195);
+  --chart-3: oklch(0.55 0.18 260);
+  --chart-4: oklch(0.65 0.12 210);
+  --chart-5: oklch(0.75 0.10 180);
+  --sidebar: oklch(0.12 0.02 270);
+  --sidebar-foreground: oklch(0.98 0 0);
+  --sidebar-primary: oklch(0.60 0.20 280);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.18 0.02 270);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(0.30 0.03 280);
+  --sidebar-ring: oklch(0.70 0.15 195);
+
+  /* Liquid Glass Variables - Dark */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.10);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  /* Header fijo del portal: opaco de verdad, no decorativo como .glass */
+  --header-bg: rgba(8, 8, 12, 0.92);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: var(--scroll-offset);
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Liquid Glass Components */
+@layer components {
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+
+  /* Header fijo del portal: a diferencia de .glass (decorativo, muy
+     transparente), necesita ocultar de verdad el contenido que se desliza
+     debajo al hacer scroll. */
+  .portal-header {
+    background: var(--header-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .glass-strong {
+    background: var(--glass-bg);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .light .glass-strong {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(124, 58, 237, 0.2);
+    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .modal-panel {
+    background: color-mix(in oklch, var(--background) 92%, transparent);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid var(--border);
+    box-shadow: 0 16px 56px rgba(124, 58, 237, 0.18);
+  }
+
+  .modal-field {
+    @apply w-full rounded-lg border border-border bg-muted/50 px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground/70 transition-all focus:border-[#7C3AED]/60 focus:outline-none focus:ring-1 focus:ring-[#7C3AED]/40;
+  }
+
+  /* Textarea que crece con su contenido hasta un tope cómodo. El alto lo fija
+     JS (scrollHeight); aquí solo vive el techo. */
+  .modal-textarea {
+    max-height: 280px;
+    /* Anula el `resize: vertical` del preflight de Tailwind: el ajuste manual
+       lo reemplaza el grabber, para no tener dos afordancias compitiendo. */
+    resize: none;
+  }
+
+  /* En escritorio el campo es ~2x más ancho, así que el mismo texto ocupa
+     menos alto: 240px ≈ 10 líneas, medido con una descripción de sesión real
+     (título + intro + bio del ponente). Es deliberadamente menor que el tope
+     móvil. */
+  @media (width >= 40rem) {
+    .modal-textarea {
+      max-height: 240px;
+    }
+  }
+
+  /* Techo de seguridad al expandir: un texto enorme no debe volver
+     inmanejable el resto del formulario. */
+  .modal-textarea[data-expanded='true'] {
+    max-height: 70vh;
+  }
+
+  /* Aire bajo la última línea para que el grabber no se le encime cuando el
+     campo está desplazado hasta el final. */
+  .modal-textarea[data-overflow='true'] {
+    padding-bottom: 1.75rem;
+  }
+
+  /* El texto se disuelve en el borde inferior para señalar que continúa.
+     Se usa máscara y no un degradado de color porque el campo es
+     semitransparente (bg-muted/50) y un degradado tendría que falsear el
+     fondo, fallando en claro/oscuro.
+
+     Tres paradas y no dos: con un degradado corto la píldora del grabber cae
+     sobre texto a medio desvanecer y se vuelve ilegible. Este deja limpia la
+     franja inferior.
+
+     Se retira al enfocar (no estorbar el cursor) y al llegar al final del
+     scroll (ahí la última línea es contenido real, no debe atenuarse). */
+  .modal-textarea[data-overflow='true']:not([data-at-end='true']):not(:focus) {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 calc(100% - 3.25rem),
+      rgb(0 0 0 / 0.35) calc(100% - 1.75rem),
+      transparent calc(100% - 0.35rem)
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      #000 calc(100% - 3.25rem),
+      rgb(0 0 0 / 0.35) calc(100% - 1.75rem),
+      transparent calc(100% - 0.35rem)
+    );
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Se listan las propiedades en vez de heredar el `transition-all` de
+       .modal-field: el alto necesita una curva más lenta (la de las hojas de
+       iOS) que el resalte de foco. */
+    .modal-textarea {
+      transition:
+        max-height 320ms cubic-bezier(0.32, 0.72, 0, 1),
+        border-color 150ms ease,
+        box-shadow 150ms ease;
+    }
+  }
+
+  /* Skeleton de carga: base neutra + barrido de marca muy sutil. Reemplaza el
+     pulso genérico de Tailwind — con bg-accent (pensado para hover, no para
+     esto) el bloque saturado parpadeando se leía como un error visual. */
+  .skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--muted);
+  }
+
+  .skeleton-shimmer::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklch, var(--gladwell-purple) 70%, transparent) 45%,
+      color-mix(in oklch, var(--gladwell-cyan) 70%, transparent) 55%,
+      transparent
+    );
+    opacity: 0.15;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .skeleton-shimmer::after {
+      animation: skeleton-shimmer 1.8s ease-in-out infinite;
+    }
+  }
+
+  @keyframes skeleton-shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .country-phone-trigger {
+    @apply appearance-none text-left;
+  }
+
+  .modal-label {
+    @apply text-xs font-medium text-muted-foreground uppercase tracking-wider;
+  }
+
+  /* Overlay idéntico al de las cards de pilares */
+  .modal-image-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent;
+  }
+
+  /* Marco de imagen: sombra en claro (como cards), limpio en oscuro */
+  .modal-image-frame {
+    @apply relative w-full overflow-hidden rounded-t-2xl;
+  }
+
+  .light .modal-image-frame {
+    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.1);
+  }
+
+  /* Controles sobre foto: mismo estilo que flechas del carrusel */
+  .modal-image-control {
+    @apply flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white backdrop-blur-md transition-all hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30;
+  }
+
+  .modal-close-button {
+    @apply absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white backdrop-blur-md transition-all hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30;
+  }
+
+  /* Cierre sobre panel de contenido (sin foto detrás) */
+  .modal-close-button-panel {
+    @apply absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background/80 text-foreground shadow-lg backdrop-blur-md transition-all hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+
+  .glass-subtle {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .light .glass-subtle {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(124, 58, 237, 0.1);
+  }
+
+  .glass-gradient {
+    background: linear-gradient(
+      135deg,
+      rgba(124, 58, 237, 0.1) 0%,
+      rgba(6, 182, 212, 0.1) 100%
+    );
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .gladwell-gradient {
+    background: linear-gradient(135deg, var(--gladwell-purple) 0%, var(--gladwell-cyan) 100%);
+  }
+
+  .gladwell-gradient-text {
+    background: linear-gradient(135deg, var(--gladwell-purple) 0%, var(--gladwell-cyan) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gladwell-border-gradient {
+    position: relative;
+  }
+
+  .gladwell-border-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--gladwell-purple) 0%, var(--gladwell-cyan) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .glass-glow {
+    box-shadow:
+      0 0 20px rgba(124, 58, 237, 0.3),
+      0 0 40px rgba(6, 182, 212, 0.2),
+      0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .divider-gradient {
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--gladwell-purple) 20%,
+      var(--gladwell-cyan) 80%,
+      transparent 100%
+    );
+  }
 }
