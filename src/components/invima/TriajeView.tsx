@@ -4,6 +4,19 @@ import { useState } from "react";
 import { actualizarExpediente } from "@/lib/invima/data";
 import type { Expediente } from "@/lib/invima/types";
 
+const COMPLIANCE_STATUS_LABEL: Record<string, string> = {
+  CONFORME: "Conforme",
+  EVALUADO_APTO_CON_OBSERVACIONES: "Apto con observaciones",
+  REQUIERE_SUBSANACION: "Requiere subsanación",
+  NO_CONFORME: "No conforme",
+};
+
+const CHECKPOINT_STATUS_LABEL: Record<string, string> = {
+  COMPLIANT: "Cumple",
+  WARNING: "Advertencia",
+  ACTION_REQUIRED: "Acción requerida",
+};
+
 export function TriajeView({
   expedientes,
   onRefrescar,
@@ -70,6 +83,61 @@ export function TriajeView({
             <span className="gladwell-gradient rounded-full px-3 py-1 text-xs font-medium text-white">
               Sala {exp.formatos?.sala}
             </span>
+          </div>
+
+          <div className="glass mt-4 rounded-xl p-4">
+            <h3 className="text-sm font-semibold text-foreground">
+              Validación práctica INVIMA
+            </h3>
+            {exp.invima_compliance_json ? (
+              <>
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                  <span className="text-2xl font-bold text-foreground">
+                    {exp.invima_compliance_score}%
+                  </span>
+                  <span className="rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground">
+                    {COMPLIANCE_STATUS_LABEL[exp.invima_compliance_status ?? ""] ??
+                      exp.invima_compliance_status}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {exp.invima_compliance_json.productCategory}
+                  </span>
+                </div>
+                <ul className="mt-3 flex flex-col gap-2">
+                  {exp.invima_compliance_json.checkpoints.map((c) => (
+                    <li key={c.code} className="text-xs">
+                      <span className="font-medium text-foreground">
+                        [{CHECKPOINT_STATUS_LABEL[c.status] ?? c.status}]{" "}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {c.requirement} — {c.details}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                {exp.invima_compliance_json.regulatoryRecommendations.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                      Recomendaciones
+                    </p>
+                    <ul className="mt-1 list-disc pl-4">
+                      {exp.invima_compliance_json.regulatoryRecommendations.map(
+                        (r, i) => (
+                          <li key={i} className="text-xs text-muted-foreground">
+                            {r}
+                          </li>
+                        ),
+                      )}
+                    </ul>
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Sin validación práctica disponible para este expediente (se
+                calcula al radicar el dossier en PDF).
+              </p>
+            )}
           </div>
 
           {exp.principio_activo ? (

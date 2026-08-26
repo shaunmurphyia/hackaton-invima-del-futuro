@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { actualizarExpediente, crearExpediente, listarFormatos } from "@/lib/invima/data";
+import {
+  actualizarExpediente,
+  crearExpediente,
+  evaluarConformidadInvima,
+  listarFormatos,
+} from "@/lib/invima/data";
 import type { Expediente, Formato } from "@/lib/invima/types";
 
 const DOSSIER_EJEMPLO = `Módulo 2 - Resumen Clínico y de Calidad.
@@ -53,8 +58,10 @@ export function SolicitanteView({
   const [nombreProducto, setNombreProducto] = useState("Vaxinol-CR 20mg");
   const [dossierTexto, setDossierTexto] = useState(DOSSIER_EJEMPLO);
   const [nombreArchivo, setNombreArchivo] = useState<string | null>(null);
+  const [archivoPdf, setArchivoPdf] = useState<File | null>(null);
   const [extrayendoPdf, setExtrayendoPdf] = useState(false);
   const [cargando, setCargando] = useState(false);
+  const [validandoConformidad, setValidandoConformidad] = useState(false);
   const inputArchivoRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -64,6 +71,7 @@ export function SolicitanteView({
   async function onSeleccionarArchivo(e: React.ChangeEvent<HTMLInputElement>) {
     const archivo = e.target.files?.[0];
     if (!archivo) return;
+    setArchivoPdf(archivo);
     setExtrayendoPdf(true);
     try {
       const texto = await extraerTextoPdf(archivo);
@@ -78,11 +86,29 @@ export function SolicitanteView({
     if (!dossierTexto.trim() || !nombreProducto.trim() || !formatoCodigo) return;
     setCargando(true);
     try {
+      let conformidad: Awaited<ReturnType<typeof evaluarConformidadInvima>> | null =
+        null;
+      if (archivoPdf) {
+        setValidandoConformidad(true);
+        try {
+          conformidad = await evaluarConformidadInvima(archivoPdf);
+        } catch (err) {
+          console.error("No se pudo validar conformidad práctica INVIMA:", err);
+        } finally {
+          setValidandoConformidad(false);
+        }
+      }
+
       await crearExpediente({
         producto_nombre: nombreProducto.trim(),
         solicitante_email: SOLICITANTE_EMAIL_DEMO,
         dossier_texto: dossierTexto,
         formato_codigo: formatoCodigo,
+        ...(conformidad && {
+          invima_compliance_score: conformidad.score,
+          invima_compliance_status: conformidad.status,
+          invima_compliance_json: conformidad,
+        }),
       });
       onRefrescar();
     } finally {
@@ -181,7 +207,11 @@ export function SolicitanteView({
           disabled={cargando || !dossierTexto.trim() || !formatoCodigo}
           className="gladwell-gradient mt-4 rounded-full px-5 py-2.5 text-sm font-medium text-white shadow-lg transition-opacity disabled:opacity-50"
         >
-          {cargando ? "Radicando..." : "Radicar expediente"}
+          {validandoConformidad
+            ? "Validando conformidad práctica INVIMA..."
+            : cargando
+              ? "Radicando..."
+              : "Radicar expediente"}
         </button>
       </div>
 
@@ -205,6 +235,12 @@ export function SolicitanteView({
             <p className="mt-1 text-xs text-muted-foreground">
               {exp.formatos?.codigo} · Sala {exp.formatos?.sala}
             </p>
+            {exp.invima_compliance_score != null && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Conformidad práctica INVIMA: {exp.invima_compliance_score}% ·{" "}
+                {exp.invima_compliance_status}
+              </p>
+            )}
             <p className="mt-1 text-xs text-muted-foreground">
               Ciclos de subsanación: {exp.ciclos_subsanacion} / 2
             </p>

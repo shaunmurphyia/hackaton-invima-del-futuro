@@ -6,6 +6,29 @@ export interface Formato {
   medicamentos: string;
   sala: string;
 }
+
+export interface InvimaCheckItem {
+  code: string;
+  requirement: string;
+  category: string;
+  status: "COMPLIANT" | "WARNING" | "ACTION_REQUIRED";
+  details: string;
+  regulationReference: string;
+}
+
+export interface InvimaComplianceResult {
+  score: number;
+  status:
+    | "CONFORME"
+    | "EVALUADO_APTO_CON_OBSERVACIONES"
+    | "REQUIERE_SUBSANACION"
+    | "NO_CONFORME";
+  productCategory: string;
+  applicableRegulations: string[];
+  stabilityZoneRequirement: string;
+  checkpoints: InvimaCheckItem[];
+  regulatoryRecommendations: string[];
+}
 export type EstadoExpediente =
   | "en_triaje"
   | "en_evaluacion"
@@ -30,6 +53,9 @@ export interface Expediente {
   principio_activo: string | null;
   endpoints_clinicos: string | null;
   especificaciones_calidad: string | null;
+  invima_compliance_score: number | null;
+  invima_compliance_status: string | null;
+  invima_compliance_json: InvimaComplianceResult | null;
   estado_preacta_validado: boolean;
   aprobado_seguridad: boolean;
   aprobado_legal: boolean;

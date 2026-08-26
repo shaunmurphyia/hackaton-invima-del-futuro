@@ -1,7 +1,27 @@
 import { createClient } from "@/lib/supabase/client";
-import type { Expediente, Formato } from "./types";
+import type { Expediente, Formato, InvimaComplianceResult } from "./types";
 
 const supabase = createClient();
+
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:3001/api/v1";
+
+export async function evaluarConformidadInvima(
+  archivo: File,
+): Promise<InvimaComplianceResult> {
+  const formData = new FormData();
+  formData.append("file", archivo);
+
+  const res = await fetch(`${BACKEND_URL}/documents/analyze-all`, {
+    method: "POST",
+    body: formData,
+  });
+  const respuesta = await res.json();
+  if (!res.ok) {
+    throw new Error(respuesta.message ?? "Error validando conformidad INVIMA");
+  }
+  return respuesta.data.invimaCompliance as InvimaComplianceResult;
+}
 
 export async function listarFormatos(): Promise<Formato[]> {
   const { data, error } = await supabase
@@ -39,6 +59,9 @@ export async function crearExpediente(input: {
   solicitante_email: string;
   dossier_texto: string;
   formato_codigo: string;
+  invima_compliance_score?: number;
+  invima_compliance_status?: string;
+  invima_compliance_json?: InvimaComplianceResult;
 }): Promise<Expediente> {
   const { data, error } = await supabase
     .from("expedientes")
