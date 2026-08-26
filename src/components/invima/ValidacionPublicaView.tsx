@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { generarBlockchainHash } from "@/lib/crypto";
 import { obtenerExpediente } from "@/lib/invima/data";
+import { PrimaryButton, TextInput } from "./ui";
 
 type Resultado = "vigente" | "no_coincide" | "no_encontrado" | null;
 
@@ -43,27 +44,28 @@ export function ValidacionPublicaView() {
 
   return (
     <div className="mx-auto flex max-w-lg flex-col gap-4">
-      <h2 className="text-lg font-semibold text-foreground">
-        Portal RISP — Verificación Criptográfica Pública
-      </h2>
-      <p className="text-sm text-muted-foreground">
-        Aduaneros, clínicas o distribuidores ingresan el UUID del expediente
-        para verificar su vigencia y autenticidad en segundos.
-      </p>
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">
+          Portal RISP — Verificación Criptográfica Pública
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Aduaneros, clínicas o distribuidores ingresan el UUID del expediente
+          para verificar su vigencia y autenticidad en segundos.
+        </p>
+      </div>
       <div className="flex gap-2">
-        <input
+        <TextInput
           value={uuid}
           onChange={(e) => setUuid(e.target.value)}
           placeholder="UUID del expediente"
-          className="modal-field"
         />
-        <button
+        <PrimaryButton
           onClick={validar}
           disabled={buscando || !uuid.trim()}
-          className="gladwell-gradient shrink-0 rounded-full px-5 py-2.5 text-sm font-medium text-white shadow-lg disabled:opacity-50"
+          className="shrink-0"
         >
           {buscando ? "Validando..." : "Validar"}
-        </button>
+        </PrimaryButton>
       </div>
 
       {resultado === "vigente" && (

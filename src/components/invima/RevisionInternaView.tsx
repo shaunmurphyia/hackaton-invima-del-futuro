@@ -18,7 +18,7 @@ export function RevisionInternaView({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex gap-2">
+      <div className="glass inline-flex w-fit gap-1 rounded-full p-1">
         <button
           onClick={() => setSubTab("admision")}
           className={

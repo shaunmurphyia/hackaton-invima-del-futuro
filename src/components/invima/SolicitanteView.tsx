@@ -8,6 +8,17 @@ import {
   listarFormatos,
 } from "@/lib/invima/data";
 import type { Expediente, Formato } from "@/lib/invima/types";
+import {
+  Badge,
+  Field,
+  PrimaryButton,
+  SecondaryButton,
+  Section,
+  SectionHeader,
+  Select,
+  TextInput,
+  Textarea,
+} from "./ui";
 
 const DOSSIER_EJEMPLO = `Módulo 2 - Resumen Clínico y de Calidad.
 Producto de investigación: Vaxinol-CR 20mg (código interno VXC-20).
@@ -134,127 +145,138 @@ export function SolicitanteView({
   );
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="glass-strong rounded-2xl p-6">
-        <h2 className="text-lg font-semibold text-foreground">
+    <div className="flex flex-col gap-8">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">
           Portal de Radicación Digital
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Sube el <strong>dossier</strong> en PDF (Módulo 2 del e-CTD) — el
-          documento que mueve todo el flujo.
+          Sube el <strong className="text-foreground">dossier</strong> en PDF
+          (Módulo 2 del e-CTD) — el documento que mueve todo el flujo.
         </p>
-
-        <label className="mt-4 block text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Formato de radicación
-        </label>
-        <select
-          value={formatoCodigo}
-          onChange={(e) => setFormatoCodigo(e.target.value)}
-          className="modal-field mt-1"
-        >
-          <option value="">Selecciona el formato aplicable...</option>
-          {formatos.map((f) => (
-            <option key={f.codigo} value={f.codigo}>
-              {f.codigo} · {f.medicamentos} · {f.nombre}
-            </option>
-          ))}
-        </select>
-
-        <label className="mt-4 block text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Nombre del producto
-        </label>
-        <input
-          value={nombreProducto}
-          onChange={(e) => setNombreProducto(e.target.value)}
-          className="modal-field mt-1"
-        />
-
-        <div className="mt-4 flex flex-wrap items-center gap-3">
-          <button
-            onClick={() => inputArchivoRef.current?.click()}
-            disabled={extrayendoPdf}
-            className="rounded-full border border-border bg-secondary px-4 py-2 text-xs font-medium text-secondary-foreground transition-colors hover:bg-muted disabled:opacity-50"
-          >
-            {extrayendoPdf ? "Leyendo PDF..." : "Subir dossier (.pdf)"}
-          </button>
-          <input
-            ref={inputArchivoRef}
-            type="file"
-            accept=".pdf,application/pdf"
-            className="hidden"
-            onChange={onSeleccionarArchivo}
-          />
-          {nombreArchivo && (
-            <span className="text-xs text-muted-foreground">{nombreArchivo}</span>
-          )}
-        </div>
-
-        <label className="mt-4 block text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Texto extraído del dossier (editable)
-        </label>
-        <textarea
-          value={dossierTexto}
-          onChange={(e) => {
-            setDossierTexto(e.target.value);
-            setNombreArchivo(null);
-          }}
-          rows={6}
-          className="modal-field modal-textarea mt-1 text-xs"
-        />
-
-        <button
-          onClick={radicar}
-          disabled={cargando || !dossierTexto.trim() || !formatoCodigo}
-          className="gladwell-gradient mt-4 rounded-full px-5 py-2.5 text-sm font-medium text-white shadow-lg transition-opacity disabled:opacity-50"
-        >
-          {validandoConformidad
-            ? "Validando conformidad práctica INVIMA..."
-            : cargando
-              ? "Radicando..."
-              : "Radicar expediente"}
-        </button>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Mis expedientes
-        </h3>
-        {misExpedientes.length === 0 && (
-          <p className="text-sm text-muted-foreground">
+      <div className="flex flex-col gap-2">
+        <SectionHeader>Datos del expediente</SectionHeader>
+        <Section>
+          <Field label="Nombre del producto">
+            <TextInput
+              value={nombreProducto}
+              onChange={(e) => setNombreProducto(e.target.value)}
+            />
+          </Field>
+          <Field
+            label="Formato de radicación"
+            hint="Determina la sala que evaluará tu expediente."
+          >
+            <Select
+              value={formatoCodigo}
+              onChange={(e) => setFormatoCodigo(e.target.value)}
+            >
+              <option value="">Selecciona el formato aplicable...</option>
+              {formatos.map((f) => (
+                <option key={f.codigo} value={f.codigo}>
+                  {f.codigo} · {f.medicamentos} · {f.nombre}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        </Section>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <SectionHeader>Dossier técnico</SectionHeader>
+        <Section>
+          <Field label="Documento">
+            <div className="flex flex-wrap items-center gap-3">
+              <SecondaryButton
+                type="button"
+                onClick={() => inputArchivoRef.current?.click()}
+                disabled={extrayendoPdf}
+              >
+                {extrayendoPdf ? "Leyendo PDF..." : "Subir dossier (.pdf)"}
+              </SecondaryButton>
+              <input
+                ref={inputArchivoRef}
+                type="file"
+                accept=".pdf,application/pdf"
+                className="hidden"
+                onChange={onSeleccionarArchivo}
+              />
+              {nombreArchivo && (
+                <span className="text-xs text-muted-foreground">
+                  {nombreArchivo}
+                </span>
+              )}
+            </div>
+          </Field>
+          <Field label="Texto extraído (editable)">
+            <Textarea
+              value={dossierTexto}
+              onChange={(e) => {
+                setDossierTexto(e.target.value);
+                setNombreArchivo(null);
+              }}
+              rows={6}
+              className="text-xs"
+            />
+          </Field>
+        </Section>
+      </div>
+
+      <PrimaryButton
+        onClick={radicar}
+        disabled={cargando || !dossierTexto.trim() || !formatoCodigo}
+        className="self-start"
+      >
+        {validandoConformidad
+          ? "Validando conformidad práctica INVIMA..."
+          : cargando
+            ? "Radicando..."
+            : "Radicar expediente"}
+      </PrimaryButton>
+
+      <div className="flex flex-col gap-2">
+        <SectionHeader>Mis expedientes</SectionHeader>
+        {misExpedientes.length === 0 ? (
+          <p className="px-1 text-sm text-muted-foreground">
             Todavía no has radicado ningún expediente.
           </p>
+        ) : (
+          <Section>
+            {misExpedientes.map((exp) => (
+              <div key={exp.id} className="flex flex-col gap-2 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="font-medium text-foreground">
+                    {exp.producto_nombre}
+                  </p>
+                  <Badge>{ESTADO_LABEL[exp.estado] ?? exp.estado}</Badge>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                  <span>
+                    {exp.formatos?.codigo} · Sala {exp.formatos?.sala}
+                  </span>
+                  {exp.invima_compliance_score != null && (
+                    <span>
+                      · Conformidad práctica: {exp.invima_compliance_score}% (
+                      {exp.invima_compliance_status})
+                    </span>
+                  )}
+                  <span>· Ciclos de subsanación: {exp.ciclos_subsanacion} / 2</span>
+                </div>
+                {exp.solicitud_subsanacion_activa && exp.ciclos_subsanacion < 2 && (
+                  <SecondaryButton
+                    onClick={() => subsanar(exp)}
+                    disabled={cargando}
+                    className="self-start"
+                  >
+                    Responder subsanación y reenviar
+                  </SecondaryButton>
+                )}
+              </div>
+            ))}
+          </Section>
         )}
-        {misExpedientes.map((exp) => (
-          <div key={exp.id} className="glass rounded-xl p-4">
-            <div className="flex items-center justify-between">
-              <p className="font-medium text-foreground">{exp.producto_nombre}</p>
-              <span className="rounded-full bg-secondary px-3 py-1 text-xs text-secondary-foreground">
-                {ESTADO_LABEL[exp.estado] ?? exp.estado}
-              </span>
-            </div>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {exp.formatos?.codigo} · Sala {exp.formatos?.sala}
-            </p>
-            {exp.invima_compliance_score != null && (
-              <p className="mt-1 text-xs text-muted-foreground">
-                Conformidad práctica INVIMA: {exp.invima_compliance_score}% ·{" "}
-                {exp.invima_compliance_status}
-              </p>
-            )}
-            <p className="mt-1 text-xs text-muted-foreground">
-              Ciclos de subsanación: {exp.ciclos_subsanacion} / 2
-            </p>
-            {exp.solicitud_subsanacion_activa && exp.ciclos_subsanacion < 2 && (
-              <button
-                onClick={() => subsanar(exp)}
-                disabled={cargando}
-                className="mt-3 rounded-full border border-border bg-secondary px-4 py-2 text-xs font-medium text-secondary-foreground transition-colors hover:bg-muted disabled:opacity-50"
-              >
-                Responder subsanación y reenviar
-              </button>
-            )}
-          </div>
-        ))}
       </div>
     </div>
   );

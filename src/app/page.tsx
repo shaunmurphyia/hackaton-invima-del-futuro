@@ -25,7 +25,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="portal-header sticky top-0 z-10 flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+      <header className="portal-header sticky top-0 z-10 flex flex-col gap-4 px-6 py-5">
         <div>
           <p className="text-xs uppercase tracking-wider text-muted-foreground">
             Hackatón INVIMA del Futuro

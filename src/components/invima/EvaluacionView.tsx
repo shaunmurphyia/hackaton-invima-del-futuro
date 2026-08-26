@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { actualizarExpediente } from "@/lib/invima/data";
 import type { Expediente } from "@/lib/invima/types";
+import { Badge, PrimaryButton, SecondaryButton } from "./ui";
 
 type Area = "seguridad" | "legal" | "calidad";
 
@@ -48,27 +49,27 @@ export function EvaluacionView({
 
   return (
     <div className="flex flex-col gap-6">
-      <h2 className="text-lg font-semibold text-foreground">
-        Consola de Evaluación Paralela (Mesa Técnica)
-      </h2>
-      {enEvaluacion.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          No hay expedientes en evaluación concurrente.
-        </p>
-      )}
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">
+          Consola de Evaluación Paralela (Mesa Técnica)
+        </h2>
+        {enEvaluacion.length === 0 && (
+          <p className="mt-1 text-sm text-muted-foreground">
+            No hay expedientes en evaluación concurrente.
+          </p>
+        )}
+      </div>
       {enEvaluacion.map((exp) => (
-        <div key={exp.id} className="glass-strong rounded-2xl p-5">
+        <div key={exp.id} className="glass-strong flex flex-col gap-4 rounded-2xl p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="font-medium text-foreground">{exp.producto_nombre}</p>
             <span className="text-xs text-muted-foreground">
               Ciclos de subsanación: {exp.ciclos_subsanacion} / 2
             </span>
           </div>
-          <span className="gladwell-gradient mt-2 inline-block rounded-full px-3 py-1 text-xs font-medium text-white">
-            Sala {exp.formatos?.sala}
-          </span>
+          <Badge tone="accent">Sala {exp.formatos?.sala}</Badge>
 
-          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-3">
             {AREAS.map((area) => {
               const aprobado = exp[`aprobado_${area.id}`];
               return (
@@ -93,12 +94,12 @@ export function EvaluacionView({
                           }))
                         }
                       />
-                      <button
+                      <PrimaryButton
                         onClick={() => firmar(exp, area.id)}
-                        className="gladwell-gradient mt-2 w-full rounded-full px-3 py-2 text-xs font-medium text-white"
+                        className="mt-2 w-full"
                       >
                         Firma Concurrente
-                      </button>
+                      </PrimaryButton>
                     </>
                   )}
                 </div>
@@ -106,12 +107,12 @@ export function EvaluacionView({
             })}
           </div>
 
-          <button
+          <SecondaryButton
             onClick={() => solicitarSubsanacion(exp)}
-            className="mt-4 rounded-full border border-border bg-secondary px-4 py-2 text-xs font-medium text-secondary-foreground transition-colors hover:bg-muted"
+            className="self-start"
           >
             Solicitar subsanación
-          </button>
+          </SecondaryButton>
         </div>
       ))}
     </div>

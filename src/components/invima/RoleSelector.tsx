@@ -17,7 +17,7 @@ export function RoleSelector({
   onCambiarRol: (rol: Rol) => void;
 }) {
   return (
-    <nav className="flex flex-wrap gap-2">
+    <nav className="glass flex w-full gap-1 overflow-x-auto rounded-full p-1">
       {ROLES.map((rol) => {
         const activo = rol.id === rolActivo;
         return (
@@ -26,8 +26,8 @@ export function RoleSelector({
             onClick={() => onCambiarRol(rol.id)}
             className={
               activo
-                ? "gladwell-gradient rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg transition-all"
-                : "glass rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-all hover:text-foreground"
+                ? "gladwell-gradient flex-1 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium text-white shadow-lg transition-all"
+                : "flex-1 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-all hover:text-foreground"
             }
           >
             {rol.label}

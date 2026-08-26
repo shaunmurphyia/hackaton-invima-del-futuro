@@ -4,6 +4,7 @@ import { useState } from "react";
 import { generarBlockchainHash } from "@/lib/crypto";
 import { actualizarExpediente } from "@/lib/invima/data";
 import type { Expediente } from "@/lib/invima/types";
+import { Field, PrimaryButton, Section } from "./ui";
 
 export function DecisionView({
   expedientes,
@@ -71,63 +72,61 @@ export function DecisionView({
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-lg font-semibold text-foreground">
-        Panel de Firma de Resolución y Acta PAR/SBA
-      </h2>
-      {listosParaFirma.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          No hay expedientes con las 3 firmas concurrentes completas.
-        </p>
-      )}
+    <div className="flex flex-col gap-6">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground">
+          Panel de Firma de Resolución y Acta PAR/SBA
+        </h2>
+        {listosParaFirma.length === 0 && (
+          <p className="mt-1 text-sm text-muted-foreground">
+            No hay expedientes con las 3 firmas concurrentes completas.
+          </p>
+        )}
+      </div>
       {listosParaFirma.map((exp) => (
-        <div key={exp.id} className="glass-strong rounded-2xl p-5">
+        <div key={exp.id} className="flex flex-col gap-4">
           <p className="font-medium text-foreground">{exp.producto_nombre}</p>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
-            <label className="text-sm">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                Beneficio (UMBRA) 1-100
-              </span>
-              <input
-                type="number"
-                min={1}
-                max={100}
-                value={scores[exp.id]?.beneficio ?? ""}
-                onChange={(e) => setScore(exp.id, "beneficio", e.target.value)}
-                className="modal-field mt-1"
-              />
-            </label>
-            <label className="text-sm">
-              <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                Riesgo (UMBRA) 1-100
-              </span>
-              <input
-                type="number"
-                min={1}
-                max={100}
-                value={scores[exp.id]?.riesgo ?? ""}
-                onChange={(e) => setScore(exp.id, "riesgo", e.target.value)}
-                className="modal-field mt-1"
-              />
-            </label>
-          </div>
-          <p className="mt-2 text-xs text-muted-foreground">
+          <Section>
+            <div className="grid gap-4 p-4 sm:grid-cols-2">
+              <Field label="Beneficio (UMBRA) 1-100">
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={scores[exp.id]?.beneficio ?? ""}
+                  onChange={(e) => setScore(exp.id, "beneficio", e.target.value)}
+                  className="modal-field"
+                />
+              </Field>
+              <Field label="Riesgo (UMBRA) 1-100">
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={scores[exp.id]?.riesgo ?? ""}
+                  onChange={(e) => setScore(exp.id, "riesgo", e.target.value)}
+                  className="modal-field"
+                />
+              </Field>
+            </div>
+          </Section>
+          <p className="text-xs text-muted-foreground">
             Balance cuantitativo beneficio-riesgo — Value Tree UMBRA, rastro de
             auditoría QoDoS.
           </p>
-          <button
+          <PrimaryButton
             onClick={() => firmarResolucion(exp)}
             disabled={
               firmando === exp.id ||
               !scores[exp.id]?.beneficio ||
               !scores[exp.id]?.riesgo
             }
-            className="gladwell-gradient mt-4 rounded-full px-5 py-2.5 text-sm font-medium text-white shadow-lg disabled:opacity-50"
+            className="self-start"
           >
             {firmando === exp.id
               ? "Firmando y anclando hash..."
               : "Aprobar y firmar resolución"}
-          </button>
+          </PrimaryButton>
         </div>
       ))}
     </div>
