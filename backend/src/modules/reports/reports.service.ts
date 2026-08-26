@@ -11,6 +11,7 @@ import {
   EnrichedMoleculeReportDto,
 } from './dto/consolidated-report-response.dto';
 import { MoleculeStatus } from '../../database/entities/molecule.entity';
+import { InvimaComplianceService } from './services/invima-compliance.service';
 
 @Injectable()
 export class ReportsService {
@@ -20,6 +21,7 @@ export class ReportsService {
     private readonly documentRepository: DocumentRepository,
     private readonly moleculeRepository: MoleculeRepository,
     private readonly researchRepository: ResearchRepository,
+    private readonly invimaComplianceService: InvimaComplianceService,
   ) {}
 
   async generateDossierReport(documentId: string): Promise<ConsolidatedDossierReportDto> {
@@ -47,9 +49,15 @@ export class ReportsService {
       });
     }
 
+    // Evaluación de conformidad regulatoria INVIMA
+    const invimaCompliance = this.invimaComplianceService.evaluateCompliance(
+      document,
+      molecules,
+    );
+
     const moleculeNames = molecules.map((m) => m.name).join(', ');
     const executiveSummary = molecules.length > 0
-      ? `Expediente regulatorio "${document.filename}" analizado exitosamente. Se identificaron ${molecules.length} molécula(s) activa(s) (${moleculeNames}). Investigaciones científicas y regulatorias consolidadas: ${researchedCount}/${molecules.length}.`
+      ? `Expediente regulatorio "${document.filename}" analizado exitosamente. Se identificaron ${molecules.length} molécula(s) activa(s) (${moleculeNames}). Conformidad INVIMA: ${invimaCompliance.score}% (${invimaCompliance.status}). Investigaciones científicas: ${researchedCount}/${molecules.length}.`
       : `Expediente regulatorio "${document.filename}" analizado. No se detectaron moléculas activas concluyentes en la muestra analizada.`;
 
     return {
@@ -57,6 +65,7 @@ export class ReportsService {
       totalMolecules: molecules.length,
       researchedMoleculesCount: researchedCount,
       molecules: enrichedMolecules,
+      invimaCompliance,
       executiveSummary,
       generatedAt: new Date().toISOString(),
     };

@@ -20,6 +20,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { DocumentsService } from './documents.service';
 import { UploadDocumentResponseDto } from './dto/upload-document-response.dto';
 import { DocumentResponseDto } from './dto/document-response.dto';
+import { ConsolidatedDossierReportDto } from '../reports/dto/consolidated-report-response.dto';
 
 @ApiTags('Documents')
 @Controller('documents')
@@ -61,6 +62,43 @@ export class DocumentsController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<UploadDocumentResponseDto> {
     return this.documentsService.processAndUploadPdf(file);
+  }
+
+  @Post('analyze-all')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({
+    summary: '⚡ Pipeline 1-Click: Análisis Regulatorio Integral e Investigación Científica',
+    description:
+      'Sube el PDF, extrae el texto, detecta automáticamente todas las moléculas, ejecuta la investigación científica con agentes de IA y genera el reporte consolidado con auditoría INVIMA en una sola llamada.',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Archivo PDF del expediente regulatorio CTD / eCTD',
+        },
+      },
+      required: ['file'],
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Reporte integral del expediente generado exitosamente.',
+    type: ConsolidatedDossierReportDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Archivo no válido o formato incompatible.',
+  })
+  async analyzeAll(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<ConsolidatedDossierReportDto> {
+    return this.documentsService.processFullPipeline(file);
   }
 
   @Get()
